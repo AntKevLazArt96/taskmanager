@@ -14,7 +14,7 @@ class TaskStatus(str, Enum):
         return [
             (cls.PENDING.value, "Pendiente"),
             (cls.IN_PROGRESS.value, "En progreso"),
-            (cls.DONE.value, "Completada"),
+            (cls.DONE.value, "Finalizada"),
         ]
 
     @classmethod
@@ -33,6 +33,7 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+    delivery_date = db.Column(db.DateTime, nullable=True)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)

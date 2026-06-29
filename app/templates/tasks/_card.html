@@ -1,0 +1,57 @@
+<div class="card mb-3 {% if is_task_overdue(task) %}border border-danger border-2{% endif %}">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start gap-2">
+      <h5 class="card-title mb-1">{{ task.title }}</h5>
+      {% if is_task_overdue(task) %}
+        <span class="badge text-bg-danger">Vencida</span>
+      {% endif %}
+    </div>
+
+    {% if task.description %}
+      <p class="card-text text-muted small mb-2">{{ task.description }}</p>
+    {% endif %}
+
+    <p class="mb-1"><strong>Responsable:</strong> {{ task.user.name }}</p>
+    <p class="mb-1">
+      <strong>Estado:</strong>
+      {{ status_labels[task.status.value] }}
+    </p>
+    <p class="mb-1">
+      <strong>Fechas:</strong>
+      {{ task.start_date.strftime("%d/%m/%Y") }} → {{ task.end_date.strftime("%d/%m/%Y") }}
+    </p>
+
+    {% if task.delivery_date %}
+      <p class="mb-2">
+        <strong>Entrega real:</strong>
+        {{ task.delivery_date.strftime("%d/%m/%Y %H:%M") }}
+      </p>
+    {% endif %}
+
+    <div class="btn-group btn-group-sm" role="group" aria-label="Cambio de estado">
+      {% if task.status.value != 'pending' %}
+        <form method="post" action="{{ url_for('tasks.status', task_id=task.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="status" value="pending">
+          <button class="btn btn-outline-warning" type="submit">Pendiente</button>
+        </form>
+      {% endif %}
+
+      {% if task.status.value != 'in_progress' %}
+        <form method="post" action="{{ url_for('tasks.status', task_id=task.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="status" value="in_progress">
+          <button class="btn btn-outline-info" type="submit">En progreso</button>
+        </form>
+      {% endif %}
+
+      {% if task.status.value != 'done' %}
+        <form method="post" action="{{ url_for('tasks.status', task_id=task.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="status" value="done">
+          <button class="btn btn-outline-success" type="submit">Finalizar</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>

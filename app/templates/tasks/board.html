@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Tablero Kanban - Task Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h3 mb-1">Tablero Kanban</h1>
+    <p class="text-muted mb-0">Tareas activas organizadas por estado.</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{{ url_for('tasks.index') }}">Ver listado</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-header bg-warning-subtle">
+        <strong>Pendiente</strong>
+      </div>
+      <div class="card-body">
+        {% for task in pending_tasks %}
+          {% include "tasks/_card.html" %}
+        {% else %}
+          <p class="text-muted mb-0">Sin tareas pendientes.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-header bg-info-subtle">
+        <strong>En progreso</strong>
+      </div>
+      <div class="card-body">
+        {% for task in in_progress_tasks %}
+          {% include "tasks/_card.html" %}
+        {% else %}
+          <p class="text-muted mb-0">Sin tareas en progreso.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-header bg-success-subtle">
+        <strong>Finalizada</strong>
+      </div>
+      <div class="card-body">
+        {% for task in done_tasks %}
+          {% include "tasks/_card.html" %}
+        {% else %}
+          <p class="text-muted mb-0">Sin tareas finalizadas.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

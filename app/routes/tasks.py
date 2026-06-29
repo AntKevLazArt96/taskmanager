@@ -3,10 +3,12 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from app.forms import TaskForm
 from app.models import TaskStatus
 from app.services.task_service import (
+    change_task_status,
     count_active_users,
     create_task,
     get_active_users,
     get_task_or_404,
+    is_task_overdue,
     list_tasks,
     set_task_active,
     update_task,
@@ -31,6 +33,24 @@ def index():
         tasks=tasks,
         active_filter=active_filter,
         status_labels=dict(TaskStatus.choices()),
+    )
+
+
+@tasks_bp.route("/board")
+def board():
+    tasks = list_tasks(active=True)
+
+    pending_tasks = [task for task in tasks if task.status == TaskStatus.PENDING]
+    in_progress_tasks = [task for task in tasks if task.status == TaskStatus.IN_PROGRESS]
+    done_tasks = [task for task in tasks if task.status == TaskStatus.DONE]
+
+    return render_template(
+        "tasks/board.html",
+        pending_tasks=pending_tasks,
+        in_progress_tasks=in_progress_tasks,
+        done_tasks=done_tasks,
+        status_labels=dict(TaskStatus.choices()),
+        is_task_overdue=is_task_overdue,
     )
 
 
@@ -108,6 +128,20 @@ def edit(task_id):
         form_title="Editar tarea",
         submit_label="Guardar cambios",
     )
+
+
+@tasks_bp.route("/<int:task_id>/status", methods=["POST"])
+def status(task_id):
+    task = get_task_or_404(task_id)
+    new_status = request.form.get("status", "").strip()
+
+    try:
+        change_task_status(task, new_status)
+        flash("Estado de tarea actualizado correctamente.", "success")
+    except ValueError as exc:
+        flash(str(exc), "danger")
+
+    return redirect(url_for("tasks.board"))
 
 
 @tasks_bp.route("/<int:task_id>/deactivate", methods=["POST"])
