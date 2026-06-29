@@ -3,6 +3,7 @@ from flask import Flask
 from .config import Config
 from .extensions import csrf, db
 from .routes.main import main_bp
+from .routes.tasks import tasks_bp
 from .routes.users import users_bp
 
 
@@ -15,6 +16,7 @@ def create_app():
 
     app.register_blueprint(main_bp)
     app.register_blueprint(users_bp)
+    app.register_blueprint(tasks_bp)
 
     with app.app_context():
         from . import models  # noqa: F401
